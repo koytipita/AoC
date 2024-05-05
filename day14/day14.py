@@ -1,4 +1,3 @@
-#file = open('input.txt', 'r')
 filename = 'input.txt' #'input.txt' 'example.txt'
 with open(filename) as f:
     Lines = f.read().splitlines()
@@ -57,7 +56,7 @@ def image_from_south(Lines):
                 image[y_index][x_index] = '#'
     return image
 
-def image_from_west(Lines):
+def image_from_east(Lines):
     y_dimension_size = len(Lines[0])
     x_dimension_size = len(Lines)
     image = [['.'] * y_dimension_size for i in range(x_dimension_size)]
@@ -69,7 +68,7 @@ def image_from_west(Lines):
                 image[y_index][x_index] = '#'
     return image
 
-def image_from_east(Lines):
+def image_from_west(Lines):
     y_dimension_size = len(Lines[0])
     x_dimension_size = len(Lines)
     image = [['.'] * y_dimension_size for i in range(x_dimension_size)]
@@ -104,7 +103,7 @@ def parse_for_south(Lines):
                 dish[x_index][y_index] = '#'
     return dish
 
-def parse_for_west(Lines):
+def parse_for_east(Lines):
     x_dimension_size = len(Lines[0])
     y_dimension_size = len(Lines)
     dish = [['.'] * y_dimension_size for i in range(x_dimension_size)]
@@ -116,7 +115,7 @@ def parse_for_west(Lines):
                 dish[y_index][x_index] = '#'
     return dish
 
-def parse_for_east(Lines):
+def parse_for_west(Lines):
     x_dimension_size = len(Lines[0])
     y_dimension_size = len(Lines)
     dish = [['.'] * y_dimension_size for i in range(x_dimension_size)]
@@ -128,30 +127,38 @@ def parse_for_east(Lines):
                 dish[y_index][x_dimension_size - x_index - 1] = '#'
     return dish
 
+def calculate_load(dish):
+    total_sum = 0
+    for column in dish:
+        for index, obj in enumerate(column):
+            if obj == 'O':
+                total_sum += index + 1
+    return total_sum
+
 def cycle(image):
     dish = parse_for_north(image)
-    ##print("parsed north...")
+    #print("parsed north...")
 
     for column in dish:
         column = process_column(column)
-    ##print("processed north...")
+    #print("processed north...")
 
     image = image_from_north(dish)
-    ##print("image after north ... ")
+    #print("image after north ... ")
     #for column in image:
         #print(column)
 
     dish = parse_for_west(image)
-    #print("parsed west...")
+    # print("parsed west...")
 
     for column in dish:
         column = process_column(column)
-    #print("processed west ...")
+    # print("processed west ...")
 
     image = image_from_west(dish)
-    #print("image after west ... ")
-    #for column in image:
-        #print(column)
+    # print("image after west ... ")
+    # for column in image:
+    # print(column)
 
     dish = parse_for_south(image)
     #print("parsed south...")
@@ -166,31 +173,41 @@ def cycle(image):
         #print(column)
 
     dish = parse_for_east(image)
-    #print("parsed east...")
+    # print("parsed east...")
 
     for column in dish:
         column = process_column(column)
-    #print("processed east ...")
+    # print("processed east ...")
 
     image = image_from_east(dish)
-    #print("image after east ... ")
-    #for column in image:
-        #print(column)
+    # print("image after east ... ")
+    # for column in image:
+    # print(column)
+
     return image
 
-image_first = parse_to_image(Lines)
-#print("first parse ... ")
+
+##print("first parse ... ")
 #for column_first in image_first:
-    #print(column_first)
+    ##print(column_first)
 
 total_sum_set = set()
-for i in range(1000000003%86):
-    image_first = cycle(image_first)
 total_sum = 0
-for column in image_first:
-    for index, obj in enumerate(column):
-        if obj == 'O':
-            total_sum += index + 1
-print(total_sum)
+image_first = parse_to_image(Lines)
+for i in range(102):
+    image_first = cycle(image_first)
+    dish = parse_for_north(image_first)
+    total_sum = calculate_load(dish)
+    print(i, total_sum)
+for i in range((1000000000-102) % 38):
+    image_first = cycle(image_first)
+    dish = parse_for_north(image_first)
+    total_sum = calculate_load(dish)
+    print(i, total_sum)
+    total_sum_set.add(total_sum)
+
+#print(len(total_sum_set))
+#print(total_sum_set)
+#print(total_sum)
 
 
