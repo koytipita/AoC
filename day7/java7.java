@@ -47,7 +47,7 @@ public class java7 {
         double digit = Math.pow(15,5);
         for (char c : cards.toCharArray()){
             if(isDigit(c)){
-                cardSum += getNumericValue(c)*digit;
+                cardSum += (getNumericValue(c)+1)*digit;
             }
             else{
                 switch (c){
@@ -61,10 +61,10 @@ public class java7 {
                         cardSum += 12*digit;
                         break;
                     case 'J':
-                        cardSum += 11*digit;
+                        cardSum += 2*digit;
                         break;
                     case 'T':
-                        cardSum += 10*digit;
+                        cardSum += 11*digit;
                         break;
                 }
             }
@@ -84,24 +84,57 @@ public class java7 {
                 return new HandPower(calculateHighestCards(cards), Integer.parseInt(bet), HandPower.handRankingsEnum.FIVEOFAKIND);
             }
             if (entry.getValue() == 4) {
+                if(charCount.get('J') != null && charCount.get('J') == 4){
+                    return new HandPower(calculateHighestCards(cards), Integer.parseInt(bet), HandPower.handRankingsEnum.FIVEOFAKIND);
+                }
+                if(charCount.get('J') != null && charCount.get('J') == 1){
+                    return new HandPower(calculateHighestCards(cards), Integer.parseInt(bet), HandPower.handRankingsEnum.FIVEOFAKIND);
+                }
                 return new HandPower(calculateHighestCards(cards), Integer.parseInt(bet), HandPower.handRankingsEnum.FOUROFAKIND);
             }
             if (entry.getValue() == 3) {
                 if(charCount.size()==2){
+                    if (charCount.get('J') != null && charCount.get('J') == 2){
+                        return new HandPower(calculateHighestCards(cards), Integer.parseInt(bet), HandPower.handRankingsEnum.FIVEOFAKIND);
+                    }
+                    if (charCount.get('J') != null && charCount.get('J') == 3){
+                        return new HandPower(calculateHighestCards(cards), Integer.parseInt(bet), HandPower.handRankingsEnum.FIVEOFAKIND);
+                    }
                     return new HandPower(calculateHighestCards(cards), Integer.parseInt(bet), HandPower.handRankingsEnum.FULLHOUSE);
                 }
                 else{
+                    if (charCount.get('J') != null && charCount.get('J') == 3){
+                        return new HandPower(calculateHighestCards(cards), Integer.parseInt(bet), HandPower.handRankingsEnum.FOUROFAKIND);
+                    }
+                    if (charCount.get('J') != null && charCount.get('J') == 1){
+                        return new HandPower(calculateHighestCards(cards), Integer.parseInt(bet), HandPower.handRankingsEnum.FOUROFAKIND);
+                    }
                     return new HandPower(calculateHighestCards(cards), Integer.parseInt(bet), HandPower.handRankingsEnum.THREEOFAKIND);
                 }
             }
             if(entry.getValue() == 2){
                 if(charCount.size() == 4) {
+                    if (charCount.get('J') != null && charCount.get('J') == 2){
+                        return new HandPower(calculateHighestCards(cards), Integer.parseInt(bet), HandPower.handRankingsEnum.THREEOFAKIND);
+                    }
+                    if (charCount.get('J') != null && charCount.get('J') == 1){
+                        return new HandPower(calculateHighestCards(cards), Integer.parseInt(bet), HandPower.handRankingsEnum.THREEOFAKIND);
+                    }
                     return new HandPower(calculateHighestCards(cards), Integer.parseInt(bet), HandPower.handRankingsEnum.ONEPAIR);
                 }
                 if (charCount.size()==3){
+                    if (charCount.get('J') != null && charCount.get('J') == 2){
+                        return new HandPower(calculateHighestCards(cards), Integer.parseInt(bet), HandPower.handRankingsEnum.FOUROFAKIND);
+                    }
+                    if (charCount.get('J') != null && charCount.get('J') == 1){
+                        return new HandPower(calculateHighestCards(cards), Integer.parseInt(bet), HandPower.handRankingsEnum.FULLHOUSE);
+                    }
                     return new HandPower(calculateHighestCards(cards), Integer.parseInt(bet), HandPower.handRankingsEnum.TWOPAIR);
                 }
             }
+        }
+        if (charCount.get('J') != null && charCount.get('J') == 1){
+            return new HandPower(calculateHighestCards(cards), Integer.parseInt(bet), HandPower.handRankingsEnum.ONEPAIR);
         }
         return new HandPower(calculateHighestCards(cards), Integer.parseInt(bet), HandPower.handRankingsEnum.HIGHCARD);
     }
