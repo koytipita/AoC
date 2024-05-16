@@ -1,6 +1,5 @@
 package day7;
 
-import day6.day6;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -13,9 +12,9 @@ import java.util.stream.IntStream;
 import static java.lang.Character.getNumericValue;
 import static java.lang.Character.isDigit;
 
-public class java7 {
+public class day7 {
 
-    static Logger logger = Logger.getLogger(day6.class.getName());
+    static Logger logger = Logger.getLogger(day7.class.getName());
 
 
 
