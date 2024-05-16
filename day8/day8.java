@@ -1,16 +1,11 @@
 package day8;
 
-import day7.day7;
+import utils.MathUtil;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.lang.Character.getNumericValue;
@@ -53,16 +48,21 @@ public class day8 {
             }
         });
 
-        int countToReachZ = 0;
-        Node currNode = nodeList.stream().filter(node -> node.getNodeId().equals("AAA")).toList().get(0);
-        currNode = executeOneLine(nodeList,directions,currNode);
-        countToReachZ += 1;
-
-        while (!currNode.getNodeId().equals("ZZZ")){
-            currNode = executeOneLine(nodeList,directions,currNode);
+        List<Node> currNodeList = nodeList.stream().filter(node -> node.getNodeId().substring(2).equals("A")).toList();
+        List<Double> counts = new ArrayList<>();
+        for (int i = 0; i < currNodeList.size(); i++) {
+            double countToReachZ = 0;
+            Node currNode = executeOneLine(nodeList,directions,currNodeList.get(i));
             countToReachZ += 1;
+            while(!currNode.getNodeId().substring(2).equals("Z")){
+                currNode = executeOneLine(nodeList,directions,currNode);
+                countToReachZ += 1;
+            }
+            counts.add(countToReachZ);
         }
-        System.out.println(countToReachZ*directions.length);
+        double one = 1;
+        System.out.println(counts.stream()
+                .reduce(one, MathUtil::LCM)*(directions.length));
 
 
 
