@@ -46,6 +46,15 @@ public class day9 {
         count += lowerRowNumbersLast;
     }
 
+    public static void extrapolateBack(List<List<Integer>> numbers){
+        Integer lowerRowNumbersFirst = numbers.getLast().getFirst();
+        for (int i = numbers.size()-2 ; i >=0 ; i--) {  // check boundaries
+            Integer upperRowNumbersFirst = numbers.get(i).getFirst();
+            lowerRowNumbersFirst = upperRowNumbersFirst - lowerRowNumbersFirst;
+        }
+        count += lowerRowNumbersFirst;
+    }
+
 
 
     public static void main(String[] args) {
@@ -54,7 +63,7 @@ public class day9 {
             String line = lines.get(i);
             List<Integer> numbers = Arrays.stream(line.split(" ")).mapToInt(Integer::parseInt).boxed().toList();
             List<List<Integer>> allDifferences = computeDifferences(numbers);
-            extrapolate(allDifferences);
+            extrapolateBack(allDifferences);
         }
         System.out.println(count);
 
