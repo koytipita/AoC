@@ -28,6 +28,24 @@ public class day3 {
 
     }
 
+    public static Integer getGearRatios(MapObject sign, Map map){
+        Integer x = sign.getLocationStartIndexX();
+        Integer y = sign.getLocationStartIndexY();
+        List <Integer> neighbors = map.getMapObjects().stream()
+                .filter(a -> a.getObjType().equals(MapObject.ObjTypeEnum.NUMBER))
+                .filter(number -> {
+                    boolean yRange = Math.max(y - 1, number.getLocationStartIndexY()) == Math.min(number.getLocationStartIndexY(), y + 1);
+                    boolean xRange = Math.max(x - number.getLength(), number.getLocationStartIndexX()) == Math.min(number.getLocationStartIndexX(), x + 1);
+                    return yRange && xRange;
+                }).mapToInt(MapObject::getValue).boxed().collect(Collectors.toList());
+
+        if(neighbors.size()>1){
+            return neighbors.stream().reduce(1,(a,b) -> a*b);
+        }
+        return 0;
+
+    }
+
     public static void main(String[] args) {
         List<String> lines = utils.FileParseUtil.readLinesFromFile(ACTUAL_FILE_PATH, logger);
         Map map = new Map(lines.getFirst().length(),lines.size(),new ArrayList<>());
@@ -59,7 +77,7 @@ public class day3 {
         }
         for (MapObject mapObject : map.getMapObjects()){
             if (mapObject.getObjType().equals(MapObject.ObjTypeEnum.SIGN)){
-                numbersToSum.addAll(getNeighborNumbers(mapObject,map));
+                numbersToSum.add(getGearRatios(mapObject,map));
             }
         }
         System.out.println(numbersToSum.stream().reduce(0, Integer::sum));
