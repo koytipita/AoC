@@ -5,11 +5,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
+import static java.lang.Math.abs;
+
 public class day10 {
 
     static Logger logger = Logger.getLogger(day10.class.getName());
     static final String EXAMPLE1_FILE_PATH = "day10/example1.txt";
     static final String EXAMPLE2_FILE_PATH = "day10/example2.txt";
+    static final String EXAMPLE3_FILE_PATH = "day10/example3.txt";
     static final String ACTUAL_FILE_PATH = "day10/input.txt";
     static int startXPosition = 0;
     static int startYPosition= 0;
@@ -19,6 +22,8 @@ public class day10 {
     static List<Node> nodeMap = new ArrayList<>();
     
     static List<Node> visitedNodes = new ArrayList<>();
+
+    static double interiorArea = 0.0;
     
     public static boolean hasEast(Node node,Integer currXIndex,Integer currYIndex){
         return node.getXIndex() == currXIndex+1
@@ -190,6 +195,21 @@ public class day10 {
         }
     }
 
+    public static void calculateInteriorArea(){
+        visitedNodes.add(visitedNodes.getFirst());
+        int n = visitedNodes.size();
+
+        double sum1 = IntStream.range(0, n-1)
+                .mapToDouble(i -> visitedNodes.get(i).getXIndex() * visitedNodes.get((i + 1)).getYIndex())
+                .sum();
+
+        double sum2 = IntStream.range(0, n-1)
+                .mapToDouble(i -> visitedNodes.get(i).getYIndex()* visitedNodes.get((i + 1)).getXIndex())
+                .sum();
+
+        interiorArea =0.5 * abs(sum1 - sum2);
+        visitedNodes.remove(visitedNodes.size()-1);
+    }
 
     public static void main(String[] args) {
         List<String> lines = utils.FileParseUtil.readLinesFromFile(ACTUAL_FILE_PATH, logger);
@@ -201,10 +221,12 @@ public class day10 {
         }
         try {
             traverseLoop();
+            calculateInteriorArea();
         }
         catch (Exception e){
             logger.log(Level.WARNING,e.getMessage());
         }
         System.out.println(nodeCount%2 == 0 ? nodeCount/2 : (nodeCount-1)/2);
+        System.out.println(Double.valueOf(interiorArea - 0.5 * visitedNodes.size() + 1).intValue()+1);
     }
 }
