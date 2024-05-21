@@ -19,8 +19,8 @@ public class day11 {
     static final String EXAMPLE3_FILE_PATH = "day11/example3.txt";
     static final String ACTUAL_FILE_PATH = "day11/input.txt";
     static List<List<Node>> nodeMap = new ArrayList<>();
-    static List<Integer> shortestPaths = new ArrayList<>();
-    static Integer sum = 0;
+    static List<Double> shortestPaths = new ArrayList<>();
+    static Double sum = 0.0;
     public static void parseNodeMap(List<String> lines){
         for(int i = 0; i < lines.size(); i++) {
             String line = lines.get(i);
@@ -108,11 +108,59 @@ public class day11 {
 
     }
 
-    public static void calculateShortestPaths(List<List<Node>>galaxyPairs){
+    /*public static void calculateShortestPaths(List<List<Node>>galaxyPairs){
         for (int i = 0; i < galaxyPairs.size(); i++) {
             List<Node> galaxyPair = galaxyPairs.get(i);
             Integer shortestPath = abs(galaxyPair.getFirst().getxIndex()-galaxyPair.getLast().getxIndex())
                     + abs(galaxyPair.getFirst().getyIndex()-galaxyPair.getLast().getyIndex());
+            shortestPaths.add(shortestPath);
+            sum += shortestPath;
+        }
+    }*/
+
+    public static void calculateShortestPathsNExpand(List<List<Node>>galaxyPairs, List<Integer> emptyHorizontalLineIndexes
+            , List<Integer> emptyVerticalLineIndexes, Integer expandTimes){
+        for (int i = 0; i < galaxyPairs.size(); i++) {
+            List<Node> galaxyPair = galaxyPairs.get(i);
+            Node leftNode;
+            Node rightNode;
+            Node upNode;
+            Node downNode;
+            Integer verticalExpands = 0;
+            Integer horizontalExpands = 0;
+
+            if(galaxyPair.getFirst().getxIndex() < galaxyPair.getLast().getxIndex()){
+                leftNode = galaxyPair.getFirst();
+                rightNode = galaxyPair.getLast();
+            }
+            else{
+                leftNode = galaxyPair.getLast();
+                rightNode = galaxyPair.getFirst();
+            }
+
+            for (int j = leftNode.getxIndex(); j < rightNode.getxIndex(); j++) {
+                if(emptyVerticalLineIndexes.contains(j)){
+                    verticalExpands += 1;
+                }
+            }
+            if(galaxyPair.getFirst().getyIndex() < galaxyPair.getLast().getyIndex()){
+                upNode = galaxyPair.getFirst();
+                downNode = galaxyPair.getLast();
+            }
+            else{
+                upNode = galaxyPair.getLast();
+                downNode = galaxyPair.getFirst();
+            }
+
+            for (int j = upNode.getyIndex(); j < downNode.getyIndex(); j++) {
+                if(emptyHorizontalLineIndexes.contains(j)){
+                    horizontalExpands += 1;
+                }
+            }
+
+            Double verticalDistance = (double) (abs(galaxyPair.getFirst().getxIndex()-galaxyPair.getLast().getxIndex()) + verticalExpands*(expandTimes-1));
+            Double horizontalDistance = (double) (abs(galaxyPair.getFirst().getyIndex()-galaxyPair.getLast().getyIndex()) + horizontalExpands*(expandTimes-1));
+            double shortestPath = verticalDistance+horizontalDistance;
             shortestPaths.add(shortestPath);
             sum += shortestPath;
         }
@@ -124,11 +172,18 @@ public class day11 {
         parseNodeMap(lines);
         List<Integer> emptyHorizontalLineIndexes = getEmptyHorizontalLineIndexes(nodeMap);
         List<Integer> emptyVerticalLineIndexes = getEmptyVerticalLineIndexes(nodeMap);
+        /* part 1
         expandHorizontally(nodeMap,emptyHorizontalLineIndexes);
         expandVertically(nodeMap,emptyVerticalLineIndexes);
         List<List<Node>> galaxyPairs =getGalaxyPairs(nodeMap);
         calculateShortestPaths(galaxyPairs);
+        */
+        List<List<Node>> galaxyPairs =getGalaxyPairs(nodeMap);
+        calculateShortestPathsNExpand(galaxyPairs,emptyHorizontalLineIndexes,emptyVerticalLineIndexes,1000000);
         System.out.println(sum);
+
+
+
 
 
 
