@@ -1,30 +1,31 @@
 package day12;
 
-import utils.StringDiff;
 
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
 public class day12part12 {
 
-    static Logger logger = Logger.getLogger(day12.class.getName());
+    static Logger logger = Logger.getLogger(day12part12.class.getName());
     static final String EXAMPLE1_FILE_PATH = "day12/example1.txt";
     static final String EXAMPLE2_FILE_PATH = "day12/example2.txt";
     static final String EXAMPLE3_FILE_PATH = "day12/example3.txt";
     static final String ACTUAL_FILE_PATH = "day12/input.txt";
 
     static List<LineAndCounts> rows = new ArrayList<>();
-    static Map<LineAndCounts,Boolean> memoryDp = new HashMap<>();
-    static Integer combinationCount =0;
+    static Map<String,Long> memoryDp = new HashMap<>();
+    static long combinationCount =0L;
 
     public static void parseRows(List<String> lines){
         rows = lines.stream().map(line -> {
             String rowString = "";
-            List<Integer> contiguousDamagedCounts = new ArrayList<>();
+            List<Long> contiguousDamagedCounts = new ArrayList<>();
             for (int i = 0; i < line.length(); i++) {
                 if(line.charAt(i) != '?' && line.charAt(i) != '.' && line.charAt(i) != '#'){
                     rowString = line.substring(0,i);
-                    contiguousDamagedCounts = Arrays.stream(line.substring(i+1).split(",")).map(Integer::parseInt).toList();
+                    contiguousDamagedCounts = Arrays.stream(line.substring(i+1).split(",")).map(Long::parseLong).toList();
                     break;
                 }
             }
@@ -32,80 +33,73 @@ public class day12part12 {
         }).toList();
     }
 
-    public static List<Integer> diffIntegerList(List<Integer> firstList, List<Integer> currList){
-        for (Integer currInteger: currList) {
-            firstList.remove(currInteger);
+    public static void putMemoryDp(String lineSoFar, List<Long> damageCountsSoFar, Long result){
+        String damageCounts = damageCountsSoFar.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining());
+        memoryDp.put(lineSoFar + damageCounts,result);
+    }
+    public static long calculateArrangements(String line,List<Long> damageCounts){
+        long result = 0L;
+        if (line.isEmpty()){
+            return damageCounts.isEmpty() ? 1 : 0 ;
         }
-        return firstList;
+        if(damageCounts.isEmpty()){
+            return line.contains("#") ? 0 : 1;
+        }
+
+        if(memoryDp.get(line+
+                damageCounts.stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining())) != null){
+            return memoryDp.get(line+
+                    damageCounts.stream()
+                            .map(String::valueOf)
+                            .collect(Collectors.joining()));
+        }
+        if (line.charAt(0) == '.' || line.charAt(0) == '?'){
+            result += calculateArrangements(line.substring(1),damageCounts);
+        }
+        if (line.charAt(0) == '#' || line.charAt(0) == '?'){
+            int damage =Math.toIntExact(damageCounts.getFirst());
+            if(damage <= line.length() //if nums[0] <= len(cfg)
+                    // and "." not in cfg[:nums[0]]
+                    // and (nums[0] == len(cfg) or cfg[nums[0]] != "#")
+            && !((line.substring(0, damage)).contains("."))
+            &&  (damage == line.length() || line.charAt(damage) != '#'))
+            {
+            try {
+            result += calculateArrangements(line.substring(damage+1),damageCounts.subList(1, damageCounts.size()));
+            }
+            catch (Exception e){
+                result += calculateArrangements("",damageCounts.subList(1, damageCounts.size()));
+            }
+            }
+        }
+        putMemoryDp(line, damageCounts,result);
+        return result;
     }
 
-    public static void putMemoryDpFalse(String lineSoFar, List<Integer> damageCountsSoFar){
-        memoryDp.put(new LineAndCounts(lineSoFar,damageCountsSoFar),false);
+    public static LineAndCounts unfoldRow(LineAndCounts row, Integer times){
+        String line = row.getLine();
+        String unfoldedLine = row.getLine();
+        List<Long> numberList = row.getNumberList();
+        List<Long> unfoldedNumbers = new ArrayList<>(numberList);
+        for (int i = 0; i < times-1; i++) {
+            unfoldedLine = unfoldedLine.concat("?"+line);
+            unfoldedNumbers.addAll(numberList);
+        }
+        return new LineAndCounts(unfoldedLine,unfoldedNumbers);
     }
-    public static void calculateArrangements(String firstLine, List<Integer> firstDamageCounts, String line,List<Integer> damageCounts ,Integer currDamageCount,Character from){
-        if(memoryDp.get(new LineAndCounts(StringDiff.StringDiff(firstLine,line),damageCounts)) != null){
-            return;
-        }
-        if (line.isEmpty() && from == '#'){
-            if(damageCounts.size() != 1 || !currDamageCount.equals(damageCounts.getFirst())){
-                putMemoryDpFalse(StringDiff.StringDiff(firstLine,line),diffIntegerList(firstDamageCounts,damageCounts));
-                return;
-            }
-            else{
-                combinationCount +=1;
-                return;
-            }
-        }
-        if (line.isEmpty() && from == '.'){
-            if(currDamageCount.equals(0) && (!damageCounts.isEmpty() || !currDamageCount.equals(0))){
-                putMemoryDpFalse(StringDiff.StringDiff(firstLine,line),diffIntegerList(firstDamageCounts,damageCounts));
-                return;
-            }
-            if(currDamageCount > 0 && (damageCounts.size() != 1 || !currDamageCount.equals(damageCounts.getFirst()))){
-                putMemoryDpFalse(StringDiff.StringDiff(firstLine,line),diffIntegerList(firstDamageCounts,damageCounts));
-                return;
-            }
-            else{
-                combinationCount +=1;
-                return;
-            }
-        }
-        if(from == '#' && (damageCounts.isEmpty() || currDamageCount>damageCounts.getFirst())){
-            putMemoryDpFalse(StringDiff.StringDiff(firstLine,line),diffIntegerList(firstDamageCounts,damageCounts));
-            return;
-        }
-        if(from == '.' && currDamageCount > 0 && (!currDamageCount.equals(damageCounts.getFirst()))) {
-            putMemoryDpFalse(StringDiff.StringDiff(firstLine, line), diffIntegerList(firstDamageCounts, damageCounts));
-            return;
-        }
-        if(from == '.' && currDamageCount > 0 && currDamageCount.equals(damageCounts.getFirst())){
-            currDamageCount = 0;
-            damageCounts = damageCounts.subList(1,damageCounts.size());
-        }
-
-        if (line.charAt(0) == '?') { ///...###..## 2,3,1
-            String damagedPlacedLine = "#"+line.substring(1);
-            String operationalPlacedLine = "."+line.substring(1);
-            calculateArrangements(firstLine, firstDamageCounts, damagedPlacedLine,damageCounts,currDamageCount,'#' );
-            calculateArrangements(firstLine, firstDamageCounts, operationalPlacedLine,damageCounts,currDamageCount, '.');
-        }
-
-        if (line.charAt(0) == '#'){
-            calculateArrangements(firstLine, firstDamageCounts, line.substring(1),damageCounts,currDamageCount+1,'#' );
-        }
-        if (line.charAt(0) == '.'){
-            calculateArrangements(firstLine, firstDamageCounts, line.substring(1),damageCounts,currDamageCount,'.');
-        }
-    }
-
 
     public static void main(String[] args) {
         List<String> lines = utils.FileParseUtil.readLinesFromFile(ACTUAL_FILE_PATH, logger);
         parseRows(lines);
         rows.forEach(row -> {
+            memoryDp = new HashMap<>();
             //Integer combCountOld = combinationCount;
-
-            calculateArrangements(row.getLine(), row.getNumberList(), row.getLine(), row.getNumberList(),0,'S');
+            row = unfoldRow(row,5);
+            combinationCount += calculateArrangements(row.getLine(), row.getNumberList());
             //System.out.print(combinationCount-combCountOld);
             //System.out.print(" ");
         });
