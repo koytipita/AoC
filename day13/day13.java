@@ -64,7 +64,7 @@ public class day13 {
 
     public static boolean checkSymmetryFromBack(List<String> map , Integer candidateIndex){     //0 1 2 3 4 5 6 7 8 size =9   5-(6 -5)   # . # . # . # .        6 , 5 , 5       7 3  8 3
         Integer lastElementIndex = map.size() -1 ;
-        Integer symmetricOfLastElementIndex = candidateIndex - ((lastElementIndex-candidateIndex)-1);
+        int symmetricOfLastElementIndex = candidateIndex - ((lastElementIndex-candidateIndex)-1);
         int i = lastElementIndex;
         int j= symmetricOfLastElementIndex;
         for (  ; i > candidateIndex; i--,j++) {
@@ -75,8 +75,8 @@ public class day13 {
         return true;
     }
     public static boolean checkSymmetryFromFront(List<String> map , Integer candidateIndex){     //0 1 2 3 4 5 6 7 8 size =9   0 2 5    5-(6 -5)   # . # . # . # .        6 , 5 , 5       7 3  8 3
-        Integer firstElementIndex = 0;
-        Integer symmetricOfFirstIndex = candidateIndex*2+1;
+        int firstElementIndex = 0;
+        int symmetricOfFirstIndex = candidateIndex*2+1;
         int i = firstElementIndex;
         int j = symmetricOfFirstIndex;
         for (  ; i <= candidateIndex; i++,j--) {
@@ -86,6 +86,39 @@ public class day13 {
         }
         return true;
     }
+    public static boolean countSymmetryFromBackAndFindSmudge(List<String> map , Integer candidateIndex){     //0 1 2 3 4 5 6 7 8 size =9   5-(6 -5)   # . # . # . # .        6 , 5 , 5       7 3  8 3
+        Integer lastElementIndex = map.size() -1 ;
+        int symmetricOfLastElementIndex = candidateIndex - ((lastElementIndex-candidateIndex)-1);
+        int expectedCountToBeSymmetric = (lastElementIndex-candidateIndex)*map.getFirst().length();
+        int count = 0;
+        int i = lastElementIndex;
+        int j= symmetricOfLastElementIndex;
+        for (  ; i > candidateIndex; i--,j++) {
+            for (int k = 0; k < map.getFirst().length(); k++) {
+                if(map.get(i).charAt(k) == map.get(j).charAt(k)){
+                    count+=1;
+                }
+            }
+        }
+        return expectedCountToBeSymmetric - count == 1;
+    }
+    public static boolean countSymmetryFromFrontAndFindSmudge(List<String> map , Integer candidateIndex){     //0 1 2 3 4 5 6 7 8 size =9   5-(6 -5)   # . # . # . # .        6 , 5 , 5       7 3  8 3
+        int firstElementIndex = 0;
+        int symmetricOfFirstIndex = candidateIndex*2+1;
+        int expectedCountToBeSymmetric = (candidateIndex+1)*(map.getFirst().length());
+        int count = 0;
+        int i = firstElementIndex;
+        int j = symmetricOfFirstIndex;
+        for (  ; i <= candidateIndex; i++,j--) {
+            for (int k = 0; k < map.getFirst().length(); k++) {
+                if(map.get(i).charAt(k) == map.get(j).charAt(k)){
+                    count+=1;
+                }
+            }
+        }
+        return expectedCountToBeSymmetric - count == 1;
+    }
+
 
     public static Long sumAllMaps(List<List<String>> mapsHorizontal, List<List<String>> mapsVertical){
         long sum = 0L;
@@ -100,13 +133,13 @@ public class day13 {
             int candidateIndexVertical = mapVertical.size()-2;
 
             for (; candidateIndexHorizontal >= candidateBoundaryHorizontal ; candidateIndexHorizontal--) {
-                horizontalSymmetry = checkSymmetryFromBack(mapHorizontal,candidateIndexHorizontal);
+                horizontalSymmetry = countSymmetryFromBackAndFindSmudge(mapHorizontal,candidateIndexHorizontal);
                 if(horizontalSymmetry){
                     break;
                 }
             }
             for (; candidateIndexVertical >= candidateBoundaryVertical ; candidateIndexVertical--) {
-                verticalSymmetry = checkSymmetryFromBack(mapVertical,candidateIndexVertical);
+                verticalSymmetry = countSymmetryFromBackAndFindSmudge(mapVertical,candidateIndexVertical);
                 if(verticalSymmetry){
                     break;
                 }
@@ -115,13 +148,13 @@ public class day13 {
                 candidateIndexHorizontal = 0;
                 candidateIndexVertical = 0;
                 for (; candidateIndexHorizontal < candidateBoundaryHorizontal ; candidateIndexHorizontal++) {
-                    horizontalSymmetry = checkSymmetryFromFront(mapHorizontal,candidateIndexHorizontal);
+                    horizontalSymmetry = countSymmetryFromFrontAndFindSmudge(mapHorizontal,candidateIndexHorizontal);
                     if(horizontalSymmetry){
                         break;
                     }
                 }
                 for (; candidateIndexVertical < candidateBoundaryVertical ; candidateIndexVertical++) {
-                    verticalSymmetry = checkSymmetryFromFront(mapVertical,candidateIndexVertical);
+                    verticalSymmetry = countSymmetryFromFrontAndFindSmudge(mapVertical,candidateIndexVertical);
                     if(verticalSymmetry){
                         break;
                     }
