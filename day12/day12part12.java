@@ -48,12 +48,10 @@ public class day12part12 {
             return line.contains("#") ? 0 : 1;
         }
 
-        if(memoryDp.get(line+
-                damageCounts.stream()
+        if(memoryDp.get(line+damageCounts.stream()
                         .map(String::valueOf)
                         .collect(Collectors.joining())) != null){
-            return memoryDp.get(line+
-                    damageCounts.stream()
+            return memoryDp.get(line+damageCounts.stream()
                             .map(String::valueOf)
                             .collect(Collectors.joining()));
         }
@@ -62,9 +60,7 @@ public class day12part12 {
         }
         if (line.charAt(0) == '#' || line.charAt(0) == '?'){
             int damage =Math.toIntExact(damageCounts.getFirst());
-            if(damage <= line.length() //if nums[0] <= len(cfg)
-                    // and "." not in cfg[:nums[0]]
-                    // and (nums[0] == len(cfg) or cfg[nums[0]] != "#")
+            if(damage <= line.length()
             && !((line.substring(0, damage)).contains("."))
             &&  (damage == line.length() || line.charAt(damage) != '#'))
             {
@@ -97,11 +93,8 @@ public class day12part12 {
         parseRows(lines);
         rows.forEach(row -> {
             memoryDp = new HashMap<>();
-            //Integer combCountOld = combinationCount;
             row = unfoldRow(row,5);
             combinationCount += calculateArrangements(row.getLine(), row.getNumberList());
-            //System.out.print(combinationCount-combCountOld);
-            //System.out.print(" ");
         });
         logger.log(Level.INFO, String.valueOf(combinationCount));
     }
