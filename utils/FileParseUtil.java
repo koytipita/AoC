@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,5 +23,17 @@ public class FileParseUtil {
             logger.log(Level.WARNING,"Error reading file: " + e.getMessage());
         }
         return lines;
+    }
+
+    public static List<String> readStringsFromFile(String filePath, Logger logger) {
+        List<String> words = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line = reader.readLine();
+            words = Arrays.stream(line.split(",")).toList();
+        } catch (IOException e) {
+            logger.log(Level.WARNING,"Error reading file: " + e.getMessage());
+        }
+        return words;
     }
 }
