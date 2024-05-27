@@ -18,6 +18,7 @@ public class day16 {
     static final String ACTUAL_FILE_PATH = "day16/input.txt";
     static List<String> energyMap = new ArrayList<>();
     static List<String> map = new ArrayList<>();
+    static List<String> splitMap = new ArrayList<>();
     static List<Beam> beamList = new ArrayList<>();
 
     public static void energizeTile(Beam beam){
@@ -61,9 +62,14 @@ public class day16 {
                 //energizeTile(beam);
                 //beam.setAlive(false);
                 //beamList.add(new Beam(Direction.NORTH,x,y-1,true));
-                beam.setY(y-1);
-                beam.setDirection(Direction.NORTH);
-                beamList.add(new Beam(Direction.SOUTH,x,y+1,true));
+                if(setPositionSplitMap(x,y)) {
+                    beam.setY(y-1);
+                    beam.setDirection(Direction.NORTH);
+                    beamList.add(new Beam(Direction.SOUTH, x, y + 1, true));
+                }
+                else{
+                    beam.setAlive(false);
+                }
                 break;
             default:
                 x +=1; //stepEast
@@ -94,9 +100,14 @@ public class day16 {
                 //energizeTile(beam);
                 //beam.setAlive(false);
                 //beamList.add(new Beam(Direction.NORTH,x,y-1,true));
-                beam.setY(y-1);
-                beam.setDirection(Direction.NORTH);
-                beamList.add(new Beam(Direction.SOUTH,x,y+1,true));
+                if(setPositionSplitMap(x,y)) {
+                    beam.setY(y - 1);
+                    beam.setDirection(Direction.NORTH);
+                    beamList.add(new Beam(Direction.SOUTH, x, y + 1, true));
+                }
+                else{
+                    beam.setAlive(false);
+                }
                 break;
             default:
                 x -=1; //stepEast
@@ -127,9 +138,14 @@ public class day16 {
                 //energizeTile(beam);
                 //beam.setAlive(false);
                 //beamList.add(new Beam(Direction.EAST,x+1,y,true));
-                beam.setX(x+1);
-                beam.setDirection(Direction.EAST);
-                beamList.add(new Beam(Direction.WEST,x-1,y,true));
+                if(setPositionSplitMap(x,y)) {
+                    beam.setX(x + 1);
+                    beam.setDirection(Direction.EAST);
+                    beamList.add(new Beam(Direction.WEST, x - 1, y, true));
+                }
+                else{
+                    beam.setAlive(false);
+                }
                 break;
             default:
                 y +=1; //stepEast
@@ -160,9 +176,14 @@ public class day16 {
                 //energizeTile(beam);
                 //beam.setAlive(false);
                 //beamList.add(new Beam(Direction.EAST,x+1,y,true));
-                beam.setX(x+1);
-                beam.setDirection(Direction.EAST);
-                beamList.add(new Beam(Direction.WEST,x-1,y,true));
+                if(setPositionSplitMap(x,y)){
+                    beam.setX(x+1);
+                    beam.setDirection(Direction.EAST);
+                    beamList.add(new Beam(Direction.WEST,x-1,y,true));
+                }
+                else{
+                    beam.setAlive(false);
+                }
                 break;
             default:
                 y -=1; //stepEast
@@ -172,9 +193,17 @@ public class day16 {
 
         return beam;
     }
+    public static Integer countEnergizedTiles(){
+        Integer count = 0;
+        for (int i = 0; i < energyMap.size(); i++) {
+            String line = energyMap.get(i);
+            count += line.length() - line.replace("#", "").length();
+        }
+        return count;
+    }
     public static void traverseMapWithBeams(){
         beamList.add(new Beam(Direction.EAST,0,0,true));
-        while (!beamList.isEmpty()){
+        while (beamList.stream().anyMatch(Beam::getAlive)){
             Stream<Beam> beamStream = beamList.stream().filter(Beam::getAlive);
             beamList = StreamUtil.getArrayListFromStream(beamStream);
             int beamListSize = beamList.size();
@@ -196,18 +225,22 @@ public class day16 {
         }
     }
 
-    public static Integer countEnergizedTiles(){
-        Integer count = 0;
-        for (int i = 0; i < energyMap.size(); i++) {
-            String line = energyMap.get(i);
-            count += line.length() - line.replace("#", "").length();
+    public static boolean setPositionSplitMap(Integer x, Integer y){
+        char charAtSplitPosition = splitMap.get(y).charAt(x);
+        if(charAtSplitPosition == '!'){
+            return false;
         }
-        return count;
+        StringBuilder line = new StringBuilder(splitMap.get(y));
+        line.setCharAt(x, '!');
+        splitMap.set(y, line.toString());
+        return true;
     }
 
     public static void main(String[] args) {
-        map = utils.FileParseUtil.readLinesFromFile(EXAMPLE1_FILE_PATH, logger);
+        map = utils.FileParseUtil.readLinesFromFile(ACTUAL_FILE_PATH, logger);
         energyMap = new ArrayList<>(Collections.nCopies(map.size(),".".repeat(map.getFirst().length())));
+        splitMap = new ArrayList<>(Collections.nCopies(map.size(),".".repeat(map.getFirst().length())));
+
         traverseMapWithBeams();
         Integer sum = countEnergizedTiles();
         logger.log(Level.INFO, String.valueOf(sum));
