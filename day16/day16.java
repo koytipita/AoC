@@ -5,9 +5,11 @@ import utils.StreamUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class day16 {
@@ -201,8 +203,8 @@ public class day16 {
         }
         return count;
     }
-    public static void traverseMapWithBeams(){
-        beamList.add(new Beam(Direction.EAST,0,0,true));
+    public static void traverseMapWithBeams(Beam startingBeam){
+        beamList.add(startingBeam);
         while (beamList.stream().anyMatch(Beam::getAlive)){
             Stream<Beam> beamStream = beamList.stream().filter(Beam::getAlive);
             beamList = StreamUtil.getArrayListFromStream(beamStream);
@@ -238,11 +240,32 @@ public class day16 {
 
     public static void main(String[] args) {
         map = utils.FileParseUtil.readLinesFromFile(ACTUAL_FILE_PATH, logger);
-        energyMap = new ArrayList<>(Collections.nCopies(map.size(),".".repeat(map.getFirst().length())));
-        splitMap = new ArrayList<>(Collections.nCopies(map.size(),".".repeat(map.getFirst().length())));
+        int fromLeftMax = IntStream.range(0,map.size()).map(y -> {
+            energyMap = new ArrayList<>(Collections.nCopies(map.size(),".".repeat(map.getFirst().length())));
+            splitMap = new ArrayList<>(Collections.nCopies(map.size(),".".repeat(map.getFirst().length())));
+            traverseMapWithBeams(new Beam(Direction.EAST,0,y,true));
+            return countEnergizedTiles();
+        }).max().getAsInt();
+        int fromRightMax = IntStream.range(0,map.size()).map(y -> {
+            energyMap = new ArrayList<>(Collections.nCopies(map.size(),".".repeat(map.getFirst().length())));
+            splitMap = new ArrayList<>(Collections.nCopies(map.size(),".".repeat(map.getFirst().length())));
+            traverseMapWithBeams(new Beam(Direction.WEST,map.getFirst().length()-1,y,true));
+            return countEnergizedTiles();
+        }).max().getAsInt();
+        int fromUpMax = IntStream.range(0,map.getFirst().length()).map(x -> {
+            energyMap = new ArrayList<>(Collections.nCopies(map.size(),".".repeat(map.getFirst().length())));
+            splitMap = new ArrayList<>(Collections.nCopies(map.size(),".".repeat(map.getFirst().length())));
+            traverseMapWithBeams(new Beam(Direction.SOUTH,x,0,true));
+            return countEnergizedTiles();
+        }).max().getAsInt();
+        int fromDownMax = IntStream.range(0,map.getFirst().length()).map(x -> {
+            energyMap = new ArrayList<>(Collections.nCopies(map.size(),".".repeat(map.getFirst().length())));
+            splitMap = new ArrayList<>(Collections.nCopies(map.size(),".".repeat(map.getFirst().length())));
+            traverseMapWithBeams(new Beam(Direction.NORTH,x,map.size()-1,true));
+            return countEnergizedTiles();
+        }).max().getAsInt();
 
-        traverseMapWithBeams();
-        Integer sum = countEnergizedTiles();
-        logger.log(Level.INFO, String.valueOf(sum));
+        Integer maxSum = Math.max(Math.max(fromUpMax,fromDownMax),Math.max(fromRightMax,fromLeftMax));
+        logger.log(Level.INFO, String.valueOf(maxSum));
     }
 }
