@@ -15,7 +15,7 @@ public class Vertex {
         this.value = value;
         this.rightCount = rightCount;
         this.straightCount = straightCount;
-        this.distance = Integer.MAX_VALUE;
+        this.distance = Integer.MAX_VALUE-1000;
         this.previous = null;
     }
 

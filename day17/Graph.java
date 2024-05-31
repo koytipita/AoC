@@ -12,9 +12,14 @@ public class Graph {
     }
 
     public Vertex getVertex(Position position,Integer rightCount, Integer straightCount){
-        return vertices.stream().filter(vertex -> vertex.getPosition().equals(position)
-                && vertex.getRightCount().equals(rightCount)
-                && vertex.getStraightCount().equals(straightCount)).findFirst().get();
+        try {
+            return vertices.stream().filter(vertex -> vertex.getPosition().equals(position)
+                    && vertex.getRightCount().equals(rightCount)
+                    && vertex.getStraightCount().equals(straightCount)).findFirst().get();
+        }
+        catch (Exception e){
+            return null;
+        }
     }
     public void setVertex(Vertex othVertex,Integer rightCount, Integer straightCount){
         this.vertices = vertices.stream().map(vertex -> {
