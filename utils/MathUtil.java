@@ -32,6 +32,11 @@ public class MathUtil {
                 dec_val += (hexVal.charAt(i) - 55) * base;
                 base = base * 16;
             }
+            else if (hexVal.charAt(i) >= 'a'
+                    && hexVal.charAt(i) <= 'f') {
+                dec_val += (hexVal.charAt(i) - 87) * base;
+                base = base * 16;
+            }
         }
         return dec_val;
     }
