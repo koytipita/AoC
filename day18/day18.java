@@ -105,12 +105,40 @@ public class day18 {
         return dig.toString();
     }
 
+    public static String convertPlanToStringPartTwo(String line){
+        List<String> command = new ArrayList<>(Arrays.asList(line.split(" ")));
+        StringBuilder dig = new StringBuilder();
+        String hexValue = command.getLast().substring(2,command.getLast().length()-2);
+        int value = utils.MathUtil.hexadecimalToDecimal(hexValue);
+        String directionNum = command.getLast().substring(command.getLast().length()-2,command.getLast().length()-1);
+        switch (directionNum){
+            case "0" -> direction = "R";
+            case "1" -> direction = "D";
+            case "2" -> direction = "L";
+            case "3" -> direction = "U";
+        }
+        for (int i = 0; i < value ; i++) {
+            dig.append("#");
+            if (direction.equals("U") || direction.equals("D")){
+                dig.append("\n");
+            }
+        }
+        return dig.toString();
+    }
 
-    public static String getImageFromDigPlan(){
+
+    public static String getImageFromDigPlan(Boolean isPartOne){
         String currString = "#";
         startX = 0;
+        if(isPartOne){
+            for (String line : lines) {
+                String tempString = convertPlanToString(line);
+                currString = compoundStrings(currString, tempString);
+            }
+            return currString;
+        }
         for (String line : lines) {
-            String tempString = convertPlanToString(line);
+            String tempString = convertPlanToStringPartTwo(line);
             currString = compoundStrings(currString, tempString);
         }
         return currString;
@@ -163,11 +191,12 @@ public class day18 {
     }
 
     public static void main(String[] args) {
-        lines = utils.FileParseUtil.readLinesFromFile(ACTUAL_FILE_PATH, logger);
-        image = getImageFromDigPlan();
+        lines = utils.FileParseUtil.readLinesFromFile(EXAMPLE1_FILE_PATH, logger);
+        boolean isPartOne = false;
+        image = getImageFromDigPlan(isPartOne);
         int boundaryCount = image.length()
                 - image.replace("#", "").length();
-        int innerCount = getCountInnerFloodFill(66,51);
+        int innerCount = getCountInnerFloodFill(1,1);
         System.out.println(String.valueOf(boundaryCount+innerCount));
     }
 }
