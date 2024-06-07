@@ -1,0 +1,23 @@
+ff
+
+high     nothing
+
+
+low    on -> off   - > low
+	   or
+	   off -> on   -> high
+
+
+conjunction
+
+mlow   mlow -> mhigh  -> low
+high
+
+mlow                  -> low
+low
+
+mhigh  mhigh -> mlow -> high
+low
+
+mhigh                -> high
+high
