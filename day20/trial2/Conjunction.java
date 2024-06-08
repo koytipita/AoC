@@ -21,13 +21,12 @@ public class Conjunction implements Item{
 
     public void pulseReceive(String pulse, String inputName){
         connectedInputsMemory.put(inputName,pulse);
-        remember = connectedInputsMemory.get(inputName);
     }
 
     public List<Pulse> pulseTransfer(String pulse){
         return connectedOutputNames.stream()
             .map(connectedOutputName -> new Pulse(this.name, connectedOutputName
-                , remember.equals("HIGH") ? "LOW" : "HIGH"))
+                , !connectedInputsMemory.containsValue("LOW") ? "LOW" : "HIGH"))
             .toList();
     }
     public String getName() {

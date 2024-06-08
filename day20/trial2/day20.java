@@ -20,33 +20,53 @@ public class day20 {
     static int buttonPressCount = 0;
     static long highCount = 0L;
     static long lowCount = 0L;
+    static long previousHighCount = 0L;
+    static long previousLowCount = 0L;
 
     public static void main(String[] args) {
-        lines = utils.FileParseUtil.readLinesFromFile(EXAMPLE2_FILE_PATH,logger);
+        lines = utils.FileParseUtil.readLinesFromFile(ACTUAL_FILE_PATH,logger);
         parseFlipFlops();
         parseConjunctions();
         parseNonTypes();
         propagationCycle();
-        System.out.println(String.valueOf(highCount) + " " + String.valueOf(lowCount));
+        System.out.println((1000.0/buttonPressCount)*(1000.0/buttonPressCount)*highCount*lowCount);
     }
     public static void propagationCycle(){
-        pressButton();
         do {
-            Pulse pulse = pulses.getFirst();
-            if (pulse.getValue().equals("HIGH")) highCount += 1;
-            if (pulse.getValue().equals("LOW")) lowCount += 1;
-            pulses.remove(0);
-            List<Item> currentItems = items.stream().filter(item ->
-                item.getName().equals(pulse.getTo())).toList();
-            currentItems.forEach(currentItem -> currentItem.pulseReceive(pulse.getValue(), pulse.getFrom()));
-            List<Pulse> pulsesToTransfer = currentItems.stream()
-                .flatMap(currentItem -> Optional.ofNullable(currentItem.pulseTransfer(pulse.getValue())).stream().flatMap(Collection::stream))
-                .toList();
-            if (!pulsesToTransfer.isEmpty()){
-                pulses.addAll(pulsesToTransfer);
+            pressButton();
+            do {
+                Pulse pulse = pulses.getFirst();
+                if (pulse.getValue().equals("HIGH")) highCount += 1;
+                if (pulse.getValue().equals("LOW")) lowCount += 1;
+                pulses.remove(0);
+                List<Item> currentItems = items.stream().filter(item ->
+                    item.getName().equals(pulse.getTo())).toList();
+                currentItems.forEach(currentItem -> currentItem.pulseReceive(pulse.getValue(), pulse.getFrom()));
+                List<Pulse> pulsesToTransfer = currentItems.stream()
+                    .flatMap(currentItem -> Optional.ofNullable(currentItem.pulseTransfer(pulse.getValue())).stream().flatMap(Collection::stream))
+                    .toList();
+                if (!pulsesToTransfer.isEmpty()){
+                    pulses.addAll(pulsesToTransfer);
+                }
             }
+            while(!pulses.isEmpty());
+            //System.out.println(highCount - previousHighCount + " "
+            //        + (lowCount - previousLowCount));
+            //previousHighCount = highCount;
+            //previousLowCount = lowCount;
+            if (buttonPressCount >= 1000) break;
         }
-        while(!pulses.isEmpty());
+        while (!detectCycle());
+    }
+
+    public static boolean detectCycle(){
+        return items.stream()
+                .filter(FlipFlop.class::isInstance)
+                .allMatch(item ->{
+                        FlipFlop flipflop = (FlipFlop) item;
+                        return flipflop.getStatus().equals("OFF");
+                        }
+                );
     }
 
     public static void pressButton(){
