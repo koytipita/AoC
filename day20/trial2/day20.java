@@ -36,6 +36,14 @@ public class day20 {
             pressButton();
             do {
                 Pulse pulse = pulses.getFirst();
+                if( (pulse.getFrom().equals("db") && pulse.getValue().equals("HIGH")) ||
+                    (pulse.getFrom().equals("dh") && pulse.getValue().equals("HIGH")) ||
+                    (pulse.getFrom().equals("lm") && pulse.getValue().equals("HIGH")) ||
+                    (pulse.getFrom().equals("sg") && pulse.getValue().equals("HIGH"))
+                ){
+                    System.out.println(pulse.getFrom() + buttonPressCount);
+                    System.out.println(3851L*3889*4027*4079);
+                }
                 if (pulse.getValue().equals("HIGH")) highCount += 1;
                 if (pulse.getValue().equals("LOW")) lowCount += 1;
                 pulses.remove(0);
@@ -50,11 +58,7 @@ public class day20 {
                 }
             }
             while(!pulses.isEmpty());
-            //System.out.println(highCount - previousHighCount + " "
-            //        + (lowCount - previousLowCount));
-            //previousHighCount = highCount;
-            //previousLowCount = lowCount;
-            if (buttonPressCount >= 1000) break;
+            //if (buttonPressCount >= 1000) break;
         }
         while (!detectCycle());
     }
