@@ -40,29 +40,25 @@ public class day21 {
         int encoded = encode(moveX, moveY);
         switch (encoded) {
             case 23: // (-1, 0)
-                boolean insideBoundaries23 =  x+moveX >= 0 && y+moveY < sizeY && y+moveY >= 0 && x+moveX < sizeX;
-                if( insideBoundaries23 && (map.get(y).substring(x-1,x).contains("#"))){
+                if((map.get(y).substring(x-1,x).contains("#"))){
                     break;
                 }
                 stations.add(new Position(x+moveX,y+moveY, move.getStepLeft()-1));
                 break;
             case 32: // (0, -1)
-                boolean insideBoundaries32 = x+moveX >= 0 && y+moveY >= 0 && x+moveX < sizeX && y+moveY <sizeY;
-                if( insideBoundaries32 &&  map.get(y-1).substring(x,x+1).contains("#")){
+                if( map.get(y-1).substring(x,x+1).contains("#")){
                     break;
                 }
                 stations.add(new Position(x+moveX,y+moveY, move.getStepLeft()-1));
                 break;
             case 34: // (0, 1)
-                boolean insideBoundaries34 = x+moveX < sizeX && y+moveY >= 0 && x+moveX >=0 && y+moveY <sizeY;
-                if(insideBoundaries34 && map.get(y+1).substring(x,x+1).contains("#")){
+                if(map.get(y+1).substring(x,x+1).contains("#")){
                     break;
                 }
                 stations.add(new Position(x+moveX,y+moveY, move.getStepLeft()-1));
                 break;
             case 43: // (1, 0)
-                boolean insideBoundaries44 = x+moveX < sizeX && y+moveY < sizeY && y+moveY >= 0 && x+moveX >=0;
-                if( insideBoundaries44 && map.get(y).substring(x+1,x+2).contains("#")){
+                if(map.get(y).substring(x+1,x+2).contains("#")){
                     break;
                 }
                 stations.add(new Position(x+moveX,y+moveY, move.getStepLeft()-1));
