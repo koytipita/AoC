@@ -1,6 +1,5 @@
 package day23;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
@@ -85,7 +84,7 @@ public class day23 {
             if(dist.get(node) == Integer.MIN_VALUE)
                 System.out.print("INF ");
             else
-                System.out.print(dist.get(node) + " ");
+                System.out.print(node.getSign() + ": "+dist.get(node)+ " ");
     }
 
 
@@ -140,8 +139,20 @@ public class day23 {
                     .filter(node -> Arrays.equals(node.getPosition(), position))
                         .findAny().orElseThrow();
             node1.getEdgeList().add(new Edge(node1, node2, distance));
+            System.out.println(" node1: "+Arrays.toString(node1.getPosition())
+                    +" node2: " + Arrays.toString(node2.getPosition()));
         }
         if (currentChar == '.'){
+            try {
+                Node node2 = nodeList.stream()
+                        .filter(node -> Arrays.equals(node.getPosition(), position))
+                        .findAny().orElseThrow();
+                node1.getEdgeList().add(new Edge(node1, node2, distance));
+                System.out.println(" node1: "+Arrays.toString(node1.getPosition())
+                        +" node2: " + Arrays.toString(node2.getPosition()));
+            }
+            catch (Exception ignored){
+            }
             int[] leftPosition = Arrays.copyOf(position,2);
             leftPosition[0] -= 1;
             int[] rightPosition = Arrays.copyOf(position,2);
