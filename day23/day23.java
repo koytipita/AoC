@@ -13,7 +13,7 @@ public class day23 {
     static List<String> map;
     static List<Node> nodeList = new ArrayList<>();
     public static void main(String[] args) {
-        map = utils.FileParseUtil.readLinesFromFile(EXAMPLE1_FILE_PATH,logger);
+        map = utils.FileParseUtil.readLinesFromFile(ACTUAL_FILE_PATH,logger);
         createNodesAndEdges();
         Node startNode = nodeList.stream().filter(node -> node.getSign() == 'S').findAny().orElseThrow();
         longestPath(startNode);
@@ -84,7 +84,7 @@ public class day23 {
             if(dist.get(node) == Integer.MIN_VALUE)
                 System.out.print("INF ");
             else
-                System.out.print(node.getSign() + ": "+dist.get(node)+ " ");
+                System.out.print(Arrays.toString(node.getPosition()) + ": "+dist.get(node)+ " ");
     }
 
 
@@ -139,8 +139,8 @@ public class day23 {
                     .filter(node -> Arrays.equals(node.getPosition(), position))
                         .findAny().orElseThrow();
             node1.getEdgeList().add(new Edge(node1, node2, distance));
-            System.out.println(" node1: "+Arrays.toString(node1.getPosition())
-                    +" node2: " + Arrays.toString(node2.getPosition()));
+            //System.out.println(" node1: "+Arrays.toString(node1.getPosition())
+            //        +" node2: " + Arrays.toString(node2.getPosition()));
         }
         if (currentChar == '.'){
             try {
@@ -148,8 +148,8 @@ public class day23 {
                         .filter(node -> Arrays.equals(node.getPosition(), position))
                         .findAny().orElseThrow();
                 node1.getEdgeList().add(new Edge(node1, node2, distance));
-                System.out.println(" node1: "+Arrays.toString(node1.getPosition())
-                        +" node2: " + Arrays.toString(node2.getPosition()));
+                //System.out.println(" node1: "+Arrays.toString(node1.getPosition())
+                //        +" node2: " + Arrays.toString(node2.getPosition()));
             }
             catch (Exception ignored){
             }
@@ -161,14 +161,16 @@ public class day23 {
             upPosition[1] -= 1;
             int[] downPosition = Arrays.copyOf(position,2);
             downPosition[1] += 1;
-            if (!from.equals("RIGHT"))
-                findEdges(leftPosition,node1,distance+1,"LEFT");
             if (!from.equals("LEFT"))
                 findEdges(rightPosition,node1,distance+1,"RIGHT");
-            if (!from.equals("DOWN"))
-                findEdges(upPosition,node1,distance+1,"UP");
             if (!from.equals("UP"))
                 findEdges(downPosition,node1,distance+1,"DOWN");
+            if (node1.getEdgeList().isEmpty()){
+                if (!from.equals("RIGHT"))
+                    findEdges(leftPosition,node1,distance+1,"LEFT");
+                if (!from.equals("DOWN"))
+                    findEdges(upPosition,node1,distance+1,"UP");
+            }
         }
 
     }
