@@ -14,11 +14,93 @@ public class day23 {
     static List<Node> nodeList = new ArrayList<>();
     public static void main(String[] args) {
         map = utils.FileParseUtil.readLinesFromFile(ACTUAL_FILE_PATH,logger);
-        createNodesAndEdges();
-        Node startNode = nodeList.stream().filter(node -> node.getSign() == 'S').findAny().orElseThrow();
-        longestPath(startNode);
+        //memoryDp.put(Arrays.toString(new int[]{1,0}), 0);
+        traverseLongestPathPartTwo();
+
+        //createNodesAndEdges();
+        //Node startNode = nodeList.stream().filter(node -> node.getSign() == 'S').findAny().orElseThrow();
+        //longestPath(startNode);
     }
 
+    public static Integer traverseLongestPathPartTwo() {
+        Stack<NodeState> stack = new Stack<>();
+        stack.push(new NodeState(new int[]{1,0}, 0, "DOWN", new HashSet<>(), new HashMap<>()));
+
+        int longestPath = Integer.MIN_VALUE;
+
+        while (!stack.isEmpty()) {
+            NodeState currentState = stack.pop();
+            int[] position = currentState.position;
+            int distance = currentState.distance;
+            String from = currentState.from;
+            Set<String> visitedPositions = currentState.visitedPositions;
+            Map<String,Integer> memoryDp = currentState.memoryDp;
+
+            char currentChar;
+            try {
+                currentChar = map.get(position[1]).charAt(position[0]);
+            } catch (Exception e) {
+                continue;
+            }
+
+            String positionKey = Arrays.toString(position);
+            if (memoryDp.containsKey(positionKey) && memoryDp.get(positionKey) >= distance) {
+                continue;
+            }
+
+            if (visitedPositions.contains(positionKey) || currentChar == '#') {
+                memoryDp.put(positionKey, Integer.MIN_VALUE);
+                continue;
+            }
+
+            visitedPositions.add(positionKey);
+            memoryDp.put(positionKey, distance);
+
+
+            if (position[0] == map.getFirst().length() - 2 && position[1] == map.size() - 1) {
+                longestPath = Math.max(longestPath, distance);
+                System.out.println(longestPath);
+                //continue;
+            }
+
+            int[] leftPosition = Arrays.copyOf(position, 2);
+            leftPosition[0] -= 1;
+            int[] rightPosition = Arrays.copyOf(position, 2);
+            rightPosition[0] += 1;
+            int[] upPosition = Arrays.copyOf(position, 2);
+            upPosition[1] -= 1;
+            int[] downPosition = Arrays.copyOf(position, 2);
+            downPosition[1] += 1;
+
+            if (!from.equals("LEFT"))
+                stack.push(new NodeState(rightPosition, distance + 1, "RIGHT", new HashSet<>(visitedPositions), new HashMap<>(memoryDp)));
+            if (!from.equals("UP"))
+                stack.push(new NodeState(downPosition, distance + 1, "DOWN", new HashSet<>(visitedPositions), new HashMap<>(memoryDp)));
+            if (!from.equals("RIGHT"))
+                stack.push(new NodeState(leftPosition, distance + 1, "LEFT", new HashSet<>(visitedPositions), new HashMap<>(memoryDp)));
+            if (!from.equals("DOWN"))
+                stack.push(new NodeState(upPosition, distance + 1, "UP", new HashSet<>(visitedPositions), new HashMap<>(memoryDp)));
+        }
+
+        return longestPath;
+    }
+
+    private static class NodeState {
+        int[] position;
+        int distance;
+        String from;
+        Set<String> visitedPositions;
+        Map<String,Integer> memoryDp;
+
+
+        NodeState(int[] position, int distance, String from, Set<String> visitedPositions, Map<String,Integer> memoryDp) {
+            this.position = position;
+            this.distance = distance;
+            this.from = from;
+            this.visitedPositions = visitedPositions;
+            this.memoryDp = memoryDp;
+        }
+    }
     public static void topologicalSortUtil(Node node1, Map<Node, Boolean> visited,
                              Stack<Node> stack)
     {
