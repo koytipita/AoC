@@ -21,8 +21,9 @@ public class day25 {
         while (cutEdges == null){
             cutEdges = kargerMinCut(createGraph());
         }
-        System.out.println(cutEdges.getFirst().getNode1().getName().split(" ").length
-        * cutEdges.getFirst().getNode2().getName().split(" ").length);
+        System.out.println(cutEdges.getFirst().getNode1().getCount()
+            * cutEdges.getFirst().getNode2().getCount());
+
     }
     public static Graph createGraph(){
         Graph mainGraph = new Graph(new ArrayList<>(), 0);
@@ -49,7 +50,7 @@ public class day25 {
             Edge randomEdge = graph.getEdgeList().get(randomInt);
             graph.cutEdge(randomEdge);
         }
-        System.out.print(graph.getEdgeList().size()+ " \n");
+        //System.out.print(graph.getEdgeList().size()+ " \n");
         if (graph.getEdgeList().size()==3) {
             return graph.getEdgeList();
         }

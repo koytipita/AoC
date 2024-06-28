@@ -17,7 +17,7 @@ public class Graph {
     public void cutEdge(Edge edge){
         Node node1 = edge.getNode1();
         Node node2 = edge.getNode2();
-        node1.setCount(node1.getCount()+1);
+        node1.setCount(node1.getCount()+ node2.getCount());
 
         verticeCount -= 1;
         edgeList.remove(edge);
