@@ -15,15 +15,28 @@ public class day25 {
     static Random random = new Random();
 
     public static void main(String[] args) {
-        lines = utils.FileParseUtil.readLinesFromFile(EXAMPLE1_FILE_PATH, logger);
-        createGraph();
-        List<Edge> cutEdges = kargerMinCut(createGraph());
-        while (cutEdges == null){
-            cutEdges = kargerMinCut(createGraph());
+        lines = utils.FileParseUtil.readLinesFromFile(ACTUAL_FILE_PATH, logger);
+        Map<String, Map<String, Integer>> G = new HashMap<>();
+        for (String l : lines) {
+            String[] parts = l.split(": ");
+            String lhs = parts[0];
+            String[] rhs = parts[1].split(" ");
+            G.putIfAbsent(lhs, new HashMap<>());
+            for (String r : rhs) {
+                G.get(lhs).put(r, 1);
+                G.putIfAbsent(r, new HashMap<>());
+                G.get(r).put(lhs, 1);
+            }
         }
-        System.out.println(cutEdges.getFirst().getNode1().getCount()
-            * cutEdges.getFirst().getNode2().getCount());
 
+        Graph2 graph = new Graph2(G);
+        String s = graph.getG().keySet().iterator().next();
+        for (String t : graph.getG().keySet()) {
+            if (!s.equals(t) && graph.minCut(s, t) == 3) {
+                break;
+            }
+        }
+        System.out.println(graph.solve());
     }
     public static Graph createGraph(){
         Graph mainGraph = new Graph(new ArrayList<>(), 0);
