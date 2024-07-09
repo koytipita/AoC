@@ -15,14 +15,13 @@ import java.util.stream.Stream;
 
 
 public class day5{
-    static Logger logger = Logger.getLogger(day5.class.getName());
+    private static Logger logger = Logger.getLogger(day5.class.getName());
+    private static String filePath = "src/main/day5/input.txt"; // Replace with the actual file path
 
 
-public static void main(String[] args) {
 
-    String filePath = "src/main/day5/input.txt"; // Replace with the actual file path
-
-    List<String> lines = readLinesFromFile(filePath);
+    public static void main(String[] args) {
+    List<String> lines = utils.FileParseUtil.readLinesFromFile(filePath,logger);
     String[] seedArr = lines.get(0).substring(7).split(" ");
     BigInteger[] seedIntArr = new BigInteger[20];
     for(int i = 0;i < seedArr.length;i++)
@@ -101,20 +100,5 @@ public static BigInteger mapRanges(BigInteger source, List<List<BigInteger>> ran
     }
     return source;
 }
-
-
-public static List<String> readLinesFromFile(String filePath) {
-        List<String> lines = new ArrayList<>();
-
-    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-    String line;
-    while ((line = reader.readLine()) != null) {
-    lines.add(line);
-    }
-    } catch (IOException e) {
-        logger.log(Level.WARNING,"Error reading file: " + e.getMessage());
-    }
-    return lines;
-    }
 
 }
