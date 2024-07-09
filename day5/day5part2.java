@@ -48,7 +48,6 @@ public class day5part2 {
                 long mappingDiff = mapping.getDestination()-mapping.getSource();
                 if (possibleRangeStart < possibleRangeEnd){
                     resultingSeedRange.add(new SeedRange(possibleRangeStart+mappingDiff,possibleRangeEnd-possibleRangeStart));
-                    break;
                 }
             }
             if (sizeOfResult == resultingSeedRange.size()){
