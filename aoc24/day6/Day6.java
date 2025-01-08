@@ -18,10 +18,68 @@ public class Day6 {
         List<String> input = utils.FileParseUtil.readLinesFromFile(ACTUAL_FILE_PATH, logger);
 
         logger.info(() -> String.valueOf(day6.countTravelledDistinctPositions(input)));
+        logger.info(() -> String.valueOf(day6.countObstructionsThatCreatesLoop(input)));
     }
 
     private String intArrToString(int[] arr){
         return String.format("%s:%s",arr[0], arr[1]);
+    }
+
+    private long countObstructionsThatCreatesLoop(List<String> input) {
+        Map<Integer, List<Integer>> horizontalObstacleMap = new HashMap<>();
+        Map<Integer, List<Integer>> verticalObstacleMap = new HashMap<>();
+
+        point = getGuardStartLocation(input);
+        initializeMaps(horizontalObstacleMap,verticalObstacleMap,input);
+        Set<String> travelledPoints = new LinkedHashSet<>(Collections.singleton(intArrToString(point)));
+
+        while (true){
+            if (travelNorth(verticalObstacleMap, travelledPoints)) break;
+            if (travelEast(horizontalObstacleMap, travelledPoints, input.getFirst().length())) break;
+            if (travelSouth(verticalObstacleMap, travelledPoints, input.size())) break;
+            if (travelWest(horizontalObstacleMap, travelledPoints)) break;
+        }
+
+        return travelledPoints.stream()
+                .map(str -> new int[]{Integer.parseInt(str.split(":")[0]),
+                        Integer.parseInt(str.split(":")[1])
+                })
+                .filter(i -> input.get(i[1]).charAt(i[0]) != '^')
+                .filter(i -> isItLoop(input, i))
+                .count();
+    }
+
+    private boolean isItLoop(List<String> input, int[] obstructionPoint){
+        char[] line = input.get(obstructionPoint[1]).toCharArray();
+        line[obstructionPoint[0]] = '#';
+        String lineStr = String.valueOf(line);
+        input.set(obstructionPoint[1], lineStr);
+
+        Map<Integer, List<Integer>> horizontalObstacleMap = new HashMap<>();
+        Map<Integer, List<Integer>> verticalObstacleMap = new HashMap<>();
+
+        point = getGuardStartLocation(input);
+        initializeMaps(horizontalObstacleMap,verticalObstacleMap,input);
+        Set<String> travelledPoints = new LinkedHashSet<>(Collections.singleton(intArrToString(point)));
+
+        line[obstructionPoint[0]] = '.';
+        lineStr = String.valueOf(line);
+        input.set(obstructionPoint[1], lineStr);
+        while (true){
+            int travelledPointsSize = travelledPoints.size();
+            if (travelNorth(verticalObstacleMap, travelledPoints)) break;
+            if (travelEast(horizontalObstacleMap, travelledPoints, input.getFirst().length())) break;
+            if (travelSouth(verticalObstacleMap, travelledPoints, input.size())) break;
+            if (travelWest(horizontalObstacleMap, travelledPoints)) break;
+            if (travelledPointsSize == travelledPoints.size() &&
+                    (point[0] > 0 && point[0] < input.getFirst().length()) &&
+                    (point[1] > 0 && point[1] < input.size())
+            ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private long countTravelledDistinctPositions(List<String> input) {
@@ -180,10 +238,10 @@ public class Day6 {
         IntStream.range(0, input.size())
                 .forEach(j -> IntStream.range(0, input.getFirst().length())
                         .forEach(i -> {
+                            horizontalObstacleMap.putIfAbsent(j, new ArrayList<>());
+                            verticalObstacleMap.putIfAbsent(i, new ArrayList<>());
                             if (input.get(j).charAt(i) == '#'){
-                                horizontalObstacleMap.putIfAbsent(j, new ArrayList<>());
                                 horizontalObstacleMap.get(j).add(i);
-                                verticalObstacleMap.putIfAbsent(i, new ArrayList<>());
                                 verticalObstacleMap.get(i).add(j);
                             }
                         }));
