@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FileParseUtil {
+    public static final String warningLine = "Error reading file:  %s";
 
     public static List<String> readLinesFromFile(String filePath, Logger logger) {
         List<String> lines = new ArrayList<>();
@@ -20,7 +21,7 @@ public class FileParseUtil {
                 lines.add(line);
             }
         } catch (IOException e) {
-            logger.log(Level.WARNING,"Error reading file: " + e.getMessage());
+            logger.log(Level.WARNING, String.format(warningLine, e.getMessage()));
         }
         return lines;
     }
@@ -32,8 +33,19 @@ public class FileParseUtil {
             String line = reader.readLine();
             words = Arrays.stream(line.split(",")).toList();
         } catch (IOException e) {
-            logger.log(Level.WARNING,"Error reading file: " + e.getMessage());
+            logger.log(Level.WARNING, String.format(warningLine, e.getMessage()));
         }
         return words;
     }
+    
+    public static String readStringFromFile(String filePath, Logger logger) {
+        String str = "";
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            str= reader.readLine();
+        } catch (IOException e) {
+            logger.log(Level.WARNING, String.format(warningLine, e.getMessage()));
+        }
+        return str;
+    } 
 }
