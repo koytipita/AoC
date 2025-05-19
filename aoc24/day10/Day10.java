@@ -29,6 +29,7 @@ public class Day10 {
         List<int[]> zeroLocations = getZeroLocations(topographicMap);
 
         long score = 0L;
+        long rating = 0L;
 
         for (int[] zeroLocation : zeroLocations) {
             Set<int[]> checkingLocations = new HashSet<>();
@@ -40,13 +41,18 @@ public class Day10 {
                 }
                 checkingLocations = newCheckingLocations;
             }
+
+            // part 1
             score += checkingLocations.stream()
                     .map(ints -> Objects.hash(ints[0], ints[1], ints[2]))
                     .distinct()
                     .count();
+
+            // part 2
+            rating += checkingLocations.size();
         }
 
-        return score;
+        return rating;
     }
 
     private List<int[]> getZeroLocations(int[][] matrix) {
